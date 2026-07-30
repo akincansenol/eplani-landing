@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>EPLANI — Brand Systems & Digital Experiences</title>
+<meta name="description" content="EPLANI is a creation and structuring laboratory. Building systems, identities and digital experiences through clarity, structure and execution.">
+
+<style>
+/* ==========================================================================
+   1. COLOR SYSTEM & BRAND FOUNDATION
+   ========================================================================== */
+:root {
+    --bg-color: #FAF9F5;
+    --text-primary: #1A1A1A;
+    --text-muted: rgba(26, 26, 26, 0.45);
+    --wordmark-color: #333333;
+    --grid-line: rgba(85, 85, 85, 0.05);
+    --brand-orange: #F3861F;
+    --mind-text: #FAF9F5;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-color: #050608;
+        --text-primary: #FAF9F5;
+        --text-muted: rgba(250, 249, 245, 0.45);
+        --wordmark-color: #FAF9F5;
+        --grid-line: rgba(250, 249, 245, 0.04);
+    }
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: var(--bg-color);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Mono", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+@media(max-width: 768px) {
+    html, body {
+        overflow-y: auto;
+    }
+}
+
+/* ==========================================================================
+   2. MAIN STAGE
+   ========================================================================== */
+.brand-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ==========================================================================
+   3. GROUNDED HUD TYPOGRAPHY
+   ========================================================================== */
+.hud-container {
+    position: absolute;
+    bottom: 22vh;
+    left: 8vw;
+    z-index: 25;
+    pointer-events: none;
+    width: clamp(320px, 55vw, 780px);
+    opacity: 0;
+    transform: translateY(10px);
+}
+
+.hud-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+}
+
+.hud-meta {
+    font-family: "SF Mono", "Roboto Mono", Consolas, monospace;
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--brand-orange);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.hud-meta::before {
+    content: "";
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background-color: var(--brand-orange);
+    border-radius: 50%;
+}
+
+.hud-status {
+    font-family: "SF Mono", "Roboto Mono", Consolas, monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+.hud-body {
+    min-height: 70px;
+    display: block;
+}
+
+.hud-text {
+    font-size: clamp(20px, 2.2vw, 32px);
+    line-height: 1.5;
+    letter-spacing: -0.015em;
+    color: var(--text-primary);
+    font-weight: 350;
+    white-space: pre-wrap;
+    display: inline;
+}
+
+.type-cursor {
+    display: inline-block;
+    width: 8px;
+    height: 1.15em;
+    background-color: var(--brand-orange);
+    margin-left: 4px;
+    vertical-align: -0.15em;
+    opacity: 0;
+}
+
+.type-cursor.active {
+    opacity: 1;
+    animation: blink 0.8s infinite;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+/* ==========================================================================
+   4. BLUEPRINT GRID & CANVAS
+   ========================================================================== */
+.blueprint-grid {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    opacity: 0;
+    background-image:
+        linear-gradient(var(--grid-line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size: 40px 40px;
+}
+
+#data-canvas {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    pointer-events: none;
+}
+
+/* ==========================================================================
+   5. EPLANI VECTOR SYMBOL
+   ========================================================================== */
+#eplani-svg {
+    position: absolute;
+    width: 80%;
+    max-width: 1100px;
+    height: auto;
+    z-index: 30;
+    overflow: visible;
+    opacity: 0;
+}
+
+.brand-path {
+    fill: var(--wordmark-color);
+    fill-opacity: 0;
+    stroke: var(--wordmark-color);
+    stroke-width: 2px;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+}
+
+#signature-dot {
+    transform-origin: center;
+}
+
+/* EXPANDING ORANGE PORTAL SPHERE */
+#orange-portal-sphere {
+    position: fixed;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: var(--brand-orange);
+    z-index: 38;
+    pointer-events: none;
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+/* ==========================================================================
+   6. THE MIND SPACE OVERLAY
+   ========================================================================== */
+.mind-space-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+    background-color: #F3861F !important;
+    color: #FAF9F5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    opacity: 0;
+    visibility: hidden;
+    text-align: center;
+}
+
+.mind-relocated-logo {
+    position: absolute;
+    bottom: 6vh;
+    right: 6vw;
+    width: clamp(130px, 16vw, 190px);
+    height: auto;
+    opacity: 0;
+    transform: translateY(12px);
+    z-index: 45;
+}
+
+.mind-content {
+    max-width: 820px;
+    text-align: center;
+    padding: 0 20px;
+}
+
+.mind-text {
+    font-size: clamp(24px, 2.8vw, 36px);
+    font-weight: 300;
+    line-height: 1.55;
+    letter-spacing: -0.015em;
+    color: #FAF9F5 !important;
+    display: inline;
+    white-space: pre-wrap;
+}
+
+.mind-cursor {
+    background-color: #FAF9F5 !important;
+}
+
+.mind-cta-wrap {
+    margin-top: 45px;
+    opacity: 0;
+    transform: translateY(16px);
+}
+
+.mind-pillars {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    margin-bottom: 35px;
+    flex-wrap: wrap;
+}
+
+.pillar-item {
+    font-family: "SF Mono", "Roboto Mono", Consolas, monospace;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(250, 249, 245, 0.75);
+    border: 1px solid rgba(250, 249, 245, 0.25);
+    padding: 8px 16px;
+    border-radius: 20px;
+}
+
+.mind-cta-text {
+    font-size: clamp(17px, 1.6vw, 22px);
+    font-weight: 300;
+    line-height: 1.6;
+    letter-spacing: -0.01em;
+    color: rgba(250, 249, 245, 0.92);
+}
+
+.mind-action {
+    display: inline-block;
+    margin-top: 18px;
+    color: #FAF9F5;
+    text-decoration: none;
+    font-size: 19px;
+    font-weight: 450;
+    border-bottom: 1px solid rgba(250, 249, 245, 0.6);
+    padding-bottom: 4px;
+    transition: border-color 0.3s ease, transform 0.3s ease;
+}
+
+.mind-action:hover {
+    border-color: rgba(250, 249, 245, 1);
+    transform: translateY(-2px);
+}
+
+.replay-btn {
+    position: absolute;
+    bottom: 6vh;
+    left: 6vw;
+    font-family: "SF Mono", "Roboto Mono", Consolas, monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(250, 249, 245, 0.6);
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    z-index: 50;
+}
+
+.replay-btn:hover {
+    color: #FAF9F5;
+}
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+</head>
+<body>
+
+<!-- HARDWARE-ACCELERATED PORTAL SPHERE -->
+<div id="orange-portal-sphere"></div>
+
+<!-- DIRECT INTEGRATED TYPOGRAPHY READOUT -->
+<div id="hud-container" class="hud-container">
+    <div class="hud-header">
+        <div id="hud-meta" class="hud-meta">01 // ORIGIN</div>
+        <div id="hud-status" class="hud-status">SYSTEM IDLE</div>
+    </div>
+    <div class="hud-body">
+        <span id="hud-text" class="hud-text"></span><span id="type-cursor" class="type-cursor"></span>
+    </div>
+</div>
+
+<div class="brand-container">
+    <div id="blueprint-grid" class="blueprint-grid"></div>
+    <canvas id="data-canvas"></canvas>
+
+    <!-- VECTOR LOGO SYSTEM -->
+    <svg id="eplani-svg" viewBox="0 0 2070.0582 651.93796" preserveAspectRatio="xMidYMid meet">
+        <defs>
+            <filter id="dot-glow" x="-100%" y="-100%" width="300%" height="300%">
+                <feGaussianBlur id="glow-blur" stdDeviation="6" result="blur"/>
+                <feMerge>
+                    <feMergeNode in="blur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+            </filter>
+        </defs>
+
+        <g id="eplani-logo-group" transform="translate(121.99984, 29.28959)">
+            <path id="ep-symbol-path" class="brand-path"
+            d="M 157.5,420.32548 C 132.48943,417.20037 118.42878,413.56033 109.50348,407.90007 92.838602,397.33152 84.957116,385.44774 80.30591,363.87571 78.696497,356.41134 78.5,349.89639 78.5,304 c 0,-55.27238 0.401826,-61.19437 5.189166,-76.47634 3.985299,-12.72174 8.883174,-21.10714 17.300164,-29.61875 C 116.93189,181.11333 139.3471,172.54028 161.5,172.5134 l 257,-0.31188 c 176.73923,-0.21449 260.27914,0.0207 267.5,0.75316 23.97995,2.43237 41.3118,9.28815 52.98068,20.95704 14.19386,14.19386 21.29243,37.5753 19.61061,64.59393 -2.60622,41.86941 -23.62666,62.56969 -71.6721,70.58049 -5.27079,0.87882 -32.17775,1.40742 -92.91919,1.82544 l -85.5,0.58842 -0.14455,42.47393 c -0.0497,14.59963 0.34542,41.32852 0.29112,43.06688 -0.0543,1.73837 -4.88107,4.07767 -17.95864,4.07767 -13.07757,0 -18.22458,-0.98719 -18.23945,-3.93857 -0.0149,-2.95138 -0.25421,-50.50977 -0.25421,-50.50977 -0.13611,-27.04375 -0.0261,-51.50993 0.31565,-54.36968 C 473.08576,303.56833 478.63302,296 486.42378,296 h 89.18216 c 55.02649,0 93.14835,-0.40203 99.53811,-1.04971 27.0792,-2.74482 39.20449,-9.16786 45.06311,-23.87094 1.95652,-4.91019 2.21991,-7.37837 2.19611,-20.57935 -0.0239,-13.26556 -0.29401,-15.68 -2.33595,-20.88083 -4.20973,-10.72221 -11.99427,-16.6354 -26.76216,-20.32871 C 687.00352,207.71449 667.52128,207.564 430,207.25662 c -179.83659,-0.23273 -259.0405,-0.009 -265,0.74958 -31.01599,3.94639 -43.83206,13.06009 -48.54072,34.51801 -2.25898,10.29446 -3.51633,35.53911 -1.36151,35.55738 l 106.54145,0.9031 108.21813,-0.0745 c 2.76683,-0.002 5.68482,11.23082 5.75907,17.31195 0.0776,6.35335 -1.54848,18.24494 -5.57347,18.22845 L 220.04435,314 114.5,314.5 l 0.0106,19 c 0.0168,29.94155 3.39149,38.52782 17.98936,45.77013 13.96365,6.92765 26.42106,7.72801 120.29545,7.72903 L 330.09087,387 c 5.5003,6e-5 5.49867,10.97689 5.51905,16.90436 0.0201,5.85563 0.51312,16.72201 -5.33725,16.73657 0,0 -56.05229,0.1395 -84.07843,0.20924 C 199.06248,420.96746 159.15,420.53165 157.5,420.32548 Z" />
+
+            <path id="plani-wordmark-path" class="brand-path"
+            d="M 954.5,421.04349 C 852.47111,420.35201 850.23161,420.23938 832.53524,414.90961 811.18959,408.48075 797.57827,392.26619 792.39327,374 c -1.71922,-6.05661 -1.8554,-12.95919 -2.14731,-101.76186 l -0.31314,-95.26187 2.48813,-2.48813 C 794.80832,172.10077 795.41904,172 807.5,172 c 12.03479,0 12.69932,0.10841 15.04545,2.45455 l 2.45455,2.45454 0.008,84.79546 c 0.008,86.684 0.45585,99.04792 3.86224,106.72053 3.80371,8.56753 13.10134,13.89283 29.12956,16.6842 10.19503,1.77551 199.9478,2.4279 202.1815,0.69513 1.8905,-1.46656 22.5102,-35.36633 52.799,-86.80441 11.1733,-18.975 25.8018,-43.725 32.5078,-55 6.706,-11.275 17.7072,-30.27375 24.4472,-42.21945 14.0055,-24.82295 16.6905,-27.93831 25.6884,-29.80627 6.8993,-1.43229 14.8385,-0.79774 19.8656,1.58776 5.5047,2.61214 7.6616,6.09279 39.683,64.03816 5.8053,10.5051 19.0226,32.3301 29.372,48.5 36.1598,56.49642 63.5394,98.37452 65.2051,99.6498 1.6657,1.27528 35.4666,1.87174 38.6686,0.64301 1.4278,-0.54789 1.5818,-10.33664 1.5818,-100.53984 0,-97.80495 0.042,-100.01594 1.9908,-103.83508 5.1072,-10.01091 17.2931,-13.37628 28.3333,-7.82477 2.1032,1.0576 12.0032,9.23208 22,18.16551 21.3898,19.11467 47.7192,42.59093 121.1641,108.03458 29.6935,26.45862 59.1005,52.71909 65.3489,58.35659 6.2484,5.6375 10.25,10.25 12.2618,10.25 0.5284,0 0.9011,-38.8919 0.9011,-94.03212 0,-100.57414 -1.8611,-102.96602 6.4461,-102.95173 l 93.7079,0.16124 c 6.9896,0.012 4.967,8.03419 5.4046,20.06917 l -0.058,14.963 -69,0.29044 -0.5,100 c -0.4775,95.50766 -0.5849,100.171 -2.3907,103.80645 -2.4255,4.88291 -6.8575,8.2285 -12.919,9.7521 -5.7147,1.43642 -14.2368,0.74447 -18.5963,-1.50992 -1.722,-0.8905 -12.0365,-9.59074 -22.921,-19.33386 -10.8846,-9.74313 -38.6528,-34.58977 -61.7071,-55.21477 -23.0544,-20.625 -49.8056,-44.7 -59.4472,-53.5 -36.7556,-33.54737 -72.9442,-65.5 -74.1834,-65.5 -0.4594,0 -0.8353,41.63945 -0.8353,92.53212 0,101.35123 0.2092,97.757 -5.8716,100.90146 -2.6011,1.34511 -8.5815,1.56332 -42.3287,1.54446 -43.4036,-0.0243 -43.9021,-0.0901 -49.9874,-6.60194 -2.7169,-2.90735 -39.9919,-60.22618 -64.3,-98.8761 -25.878,-41.14601 -45.4717,-74.43082 -54.9315,-93.3151 -2.9439,-5.8768 -5.1736,-9.19879 -6.0409,-9 -0.756,0.17331 -6.9656,9.5401 -13.799,20.8151 -6.8335,11.275 -18.7172,30.85 -26.4082,43.5 -13.9794,22.99317 -28.9084,49.24227 -48.3431,85 -10.6908,19.66999 -24.1551,42.84481 -29.1983,50.25645 -4.4821,6.58699 -8.4719,8.1081 -22.4345,8.55304 -6.5212,0.20781 -54.6068,0.0881 -106.8568,-0.266 z m 777.5217,0.47306 c -13.1892,0.0667 -15.4925,-0.67334 -17.1186,-3.38336 -1.6261,-2.71002 -1.9057,-5.14494 -1.658,-100.5 L 1713.5,219.5 h 17 17 l -0.052,98.0893 c -0.049,92.29533 0.2134,97.93542 -1.2367,100.38713 -0.8743,1.47826 -2.3361,3.54012 -14.1893,3.54012 z" />
+            <circle id="signature-dot" cx="798.97333" cy="382.64856" r="6" fill="#F3861F" filter="url(#dot-glow)"/>
+        </g>
+    </svg>
+
+    <!-- THE MIND SPACE OVERLAY & EMBEDDED LOGO -->
+    <div id="mind-space-overlay" class="mind-space-overlay">
+        <svg id="mind-logo-svg" class="mind-relocated-logo" viewBox="0 0 2070.0582 651.93796">
+            <g transform="translate(121.99984, 29.28959)" fill="#FAF9F5">
+                <path d="M 157.5,420.32548 C 132.48943,417.20037 118.42878,413.56033 109.50348,407.90007 92.838602,397.33152 84.957116,385.44774 80.30591,363.87571 78.696497,356.41134 78.5,349.89639 78.5,304 c 0,-55.27238 0.401826,-61.19437 5.189166,-76.47634 3.985299,-12.72174 8.883174,-21.10714 17.300164,-29.61875 C 116.93189,181.11333 139.3471,172.54028 161.5,172.5134 l 257,-0.31188 c 176.73923,-0.21449 260.27914,0.0207 267.5,0.75316 23.97995,2.43237 41.3118,9.28815 52.98068,20.95704 14.19386,14.19386 21.29243,37.5753 19.61061,64.59393 -2.60622,41.86941 -23.62666,62.56969 -71.6721,70.58049 -5.27079,0.87882 -32.17775,1.40742 -92.91919,1.82544 l -85.5,0.58842 -0.14455,42.47393 c -0.0497,14.59963 0.34542,41.32852 0.29112,43.06688 -0.0543,1.73837 -4.88107,4.07767 -17.95864,4.07767 -13.07757,0 -18.22458,-0.98719 -18.23945,-3.93857 -0.0149,-2.95138 -0.25421,-50.50977 -0.25421,-50.50977 -0.13611,-27.04375 -0.0261,-51.50993 0.31565,-54.36968 C 473.08576,303.56833 478.63302,296 486.42378,296 h 89.18216 c 55.02649,0 93.14835,-0.40203 99.53811,-1.04971 27.0792,-2.74482 39.20449,-9.16786 45.06311,-23.87094 1.95652,-4.91019 2.21991,-7.37837 2.19611,-20.57935 -0.0239,-13.26556 -0.29401,-15.68 -2.33595,-20.88083 -4.20973,-10.72221 -11.99427,-16.6354 -26.76216,-20.32871 C 687.00352,207.71449 667.52128,207.564 430,207.25662 c -179.83659,-0.23273 -259.0405,-0.009 -265,0.74958 -31.01599,3.94639 -43.83206,13.06009 -48.54072,34.51801 -2.25898,10.29446 -3.51633,35.53911 -1.36151,35.55738 l 106.54145,0.9031 108.21813,-0.0745 c 2.76683,-0.002 5.68482,11.23082 5.75907,17.31195 0.0776,6.35335 -1.54848,18.24494 -5.57347,18.22845 L 220.04435,314 114.5,314.5 l 0.0106,19 c 0.0168,29.94155 3.39149,38.52782 17.98936,45.77013 13.96365,6.92765 26.42106,7.72801 120.29545,7.72903 L 330.09087,387 c 5.5003,6e-5 5.49867,10.97689 5.51905,16.90436 0.0201,5.85563 0.51312,16.72201 -5.33725,16.73657 0,0 -56.05229,0.1395 -84.07843,0.20924 C 199.06248,420.96746 159.15,420.53165 157.5,420.32548 Z" />
+                <path d="M 954.5,421.04349 C 852.47111,420.35201 850.23161,420.23938 832.53524,414.90961 811.18959,408.48075 797.57827,392.26619 792.39327,374 c -1.71922,-6.05661 -1.8554,-12.95919 -2.14731,-101.76186 l -0.31314,-95.26187 2.48813,-2.48813 C 794.80832,172.10077 795.41904,172 807.5,172 c 12.03479,0 12.69932,0.10841 15.04545,2.45455 l 2.45455,2.45454 0.008,84.79546 c 0.008,86.684 0.45585,99.04792 3.86224,106.72053 3.80371,8.56753 13.10134,13.89283 29.12956,16.6842 10.19503,1.77551 199.9478,2.4279 202.1815,0.69513 1.8905,-1.46656 22.5102,-35.36633 52.799,-86.80441 11.1733,-18.975 25.8018,-43.725 32.5078,-55 6.706,-11.275 17.7072,-30.27375 24.4472,-42.21945 14.0055,-24.82295 16.6905,-27.93831 25.6884,-29.80627 6.8993,-1.43229 14.8385,-0.79774 19.8656,1.58776 5.5047,2.61214 7.6616,6.09279 39.683,64.03816 5.8053,10.5051 19.0226,32.3301 29.372,48.5 36.1598,56.49642 63.5394,98.37452 65.2051,99.6498 1.6657,1.27528 35.4666,1.87174 38.6686,0.64301 1.4278,-0.54789 1.5818,-10.33664 1.5818,-100.53984 0,-97.80495 0.042,-100.01594 1.9908,-103.83508 5.1072,-10.01091 17.2931,-13.37628 28.3333,-7.82477 2.1032,1.0576 12.0032,9.23208 22,18.16551 21.3898,19.11467 47.7192,42.59093 121.1641,108.03458 29.6935,26.45862 59.1005,52.71909 65.3489,58.35659 6.2484,5.6375 10.25,10.25 12.2618,10.25 0.5284,0 0.9011,-38.8919 0.9011,-94.03212 0,-100.57414 -1.8611,-102.96602 6.4461,-102.95173 l 93.7079,0.16124 c 6.9896,0.012 4.967,8.03419 5.4046,20.06917 l -0.058,14.963 -69,0.29044 -0.5,100 c -0.4775,95.50766 -0.5849,100.171 -2.3907,103.80645 -2.4255,4.88291 -6.8575,8.2285 -12.919,9.7521 -5.7147,1.43642 -14.2368,0.74447 -18.5963,-1.50992 -1.722,-0.8905 -12.0365,-9.59074 -22.921,-19.33386 -10.8846,-9.74313 -38.6528,-34.58977 -61.7071,-55.21477 -23.0544,-20.625 -49.8056,-44.7 -59.4472,-53.5 -36.7556,-33.54737 -72.9442,-65.5 -74.1834,-65.5 -0.4594,0 -0.8353,41.63945 -0.8353,92.53212 0,101.35123 0.2092,97.757 -5.8716,100.90146 -2.6011,1.34511 -8.5815,1.56332 -42.3287,1.54446 -43.4036,-0.0243 -43.9021,-0.0901 -49.9874,-6.60194 -2.7169,-2.90735 -39.9919,-60.22618 -64.3,-98.8761 -25.878,-41.14601 -45.4717,-74.43082 -54.9315,-93.3151 -2.9439,-5.8768 -5.1736,-9.19879 -6.0409,-9 -0.756,0.17331 -6.9656,9.5401 -13.799,20.8151 -6.8335,11.275 -18.7172,30.85 -26.4082,43.5 -13.9794,22.99317 -28.9084,49.24227 -48.3431,85 -10.6908,19.66999 -24.1551,42.84481 -29.1983,50.25645 -4.4821,6.58699 -8.4719,8.1081 -22.4345,8.55304 -6.5212,0.20781 -54.6068,0.0881 -106.8568,-0.266 z m 777.5217,0.47306 c -13.1892,0.0667 -15.4925,-0.67334 -17.1186,-3.38336 -1.6261,-2.71002 -1.9057,-5.14494 -1.658,-100.5 L 1713.5,219.5 h 17 17 l -0.052,98.0893 c -0.049,92.29533 0.2134,97.93542 -1.2367,100.38713 -0.8743,1.47826 -2.3361,3.54012 -14.1893,3.54012 z" />
+                <circle cx="1202.9733" cy="382.64856" r="40" fill="#FAF9F5"/>
+            </g>
+        </svg>
+
+        <div class="mind-content">
+            <div class="hud-body">
+                <span id="mind-text" class="mind-text"></span><span id="mind-cursor" class="type-cursor mind-cursor"></span>
+            </div>
+            
+            <div id="m-cta-wrap" class="mind-cta-wrap">
+                <p class="mind-cta-text">
+                    Whether you're shaping a brand,<br>
+                    designing a digital experience,<br>
+                    or building a system—
+                </p>
+                <a href="https://www.linkedin.com/company/eplani" target="_blank" rel="noopener noreferrer" class="mind-action">Let's explore what's possible →</a>
+            </div>
+        </div>
+
+        <button id="replay-btn" class="replay-btn">↺ Replay Experience</button>
+    </div>
+</div>
+
+<script>
+/* ==========================================================================
+   CONFIG & ENGINE
+   ========================================================================== */
+const CONFIG = {
+    brandColor: "#F3861F",
+    particleCount: 160,
+    gridSize: 40,
+    coords: {
+        epDot: { x: 798.97333, y: 382.64856 },
+        finalDot: { x: 1202.9733, y: 382.64856 }
+    }
+};
+
+const canvas = document.getElementById("data-canvas");
+const ctx = canvas.getContext("2d");
+
+let width, height;
+let nodes = [];
+let isDrifting = true;
+let masterTL = null;
+
+function resizeCanvas() {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+
+    const offsetX = (width / 2) % CONFIG.gridSize;
+    const offsetY = (height / 2) % CONFIG.gridSize;
+
+    document.getElementById("blueprint-grid").style.backgroundPosition = `${offsetX}px ${offsetY}px`;
+}
+
+function getPointInScreenPixels(svgX, svgY) {
+    const svg = document.getElementById("eplani-svg");
+    const group = document.getElementById("eplani-logo-group");
+    
+    if (svg && group && group.getScreenCTM) {
+        const ctm = group.getScreenCTM();
+        if (ctm && (ctm.e !== 0 || ctm.f !== 0 || ctm.a !== 0)) {
+            const pt = svg.createSVGPoint();
+            pt.x = svgX;
+            pt.y = svgY;
+            const screenPt = pt.matrixTransform(ctm);
+            if (screenPt.x > 0 && screenPt.y > 0) {
+                return { x: screenPt.x, y: screenPt.y };
+            }
+        }
+    }
+    
+    const rect = svg.getBoundingClientRect();
+    const viewBoxWidth = 2070.0582;
+    const viewBoxHeight = 651.93796;
+    const viewBoxAspect = viewBoxWidth / viewBoxHeight;
+    const rectAspect = rect.width / rect.height;
+    
+    let renderWidth = rect.width;
+    let offsetX = rect.left;
+    let offsetY = rect.top;
+    
+    if (rectAspect > viewBoxAspect) {
+        renderWidth = rect.height * viewBoxAspect;
+        offsetX = rect.left + (rect.width - renderWidth) / 2;
+    } else {
+        const renderHeight = rect.width / viewBoxAspect;
+        offsetY = rect.top + (rect.height - renderHeight) / 2;
+    }
+    
+    const scale = renderWidth / viewBoxWidth;
+    return {
+        x: offsetX + (svgX + 121.99984) * scale,
+        y: offsetY + (svgY + 29.28959) * scale
+    };
+}
+
+class SignalNode {
+    constructor() {
+        this.x = Math.random() * window.innerWidth;
+        this.y = Math.random() * window.innerHeight;
+        this.vx = (Math.random() - 0.5) * 0.2;
+        this.vy = (Math.random() - 0.5) * 0.2;
+
+        const rand = Math.random();
+        if (rand < 0.40) {
+            this.radius = Math.random() * 0.6 + 1.2;
+            this.alpha = Math.random() * 0.2 + 0.15;
+        } else if (rand < 0.70) {
+            this.radius = Math.random() * 1.5 + 3.2;
+            this.alpha = Math.random() * 0.2 + 0.25;
+        } else if (rand < 0.88) {
+            this.radius = Math.random() * 3.0 + 8.5;
+            this.alpha = Math.random() * 0.2 + 0.35;
+        } else if (rand < 0.96) {
+            this.radius = Math.random() * 4.0 + 18.0;
+            this.alpha = Math.random() * 0.15 + 0.20;
+        } else {
+            this.radius = Math.random() * 4.0 + 36.0;
+            this.alpha = Math.random() * 0.08 + 0.08;
+        }
+    }
+
+    drift() {
+        this.x += this.vx;
+        this.y += this.vy;
+
+        if (this.x < 0 || this.x > width) this.vx *= -1;
+        if (this.y < 0 || this.y > height) this.vy *= -1;
+    }
+
+    draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = CONFIG.brandColor;
+        ctx.globalAlpha = this.alpha;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+    }
+}
+
+function initNodes() {
+    nodes = [];
+    for (let i = 0; i < CONFIG.particleCount; i++) {
+        nodes.push(new SignalNode());
+    }
+}
+
+function render() {
+    ctx.clearRect(0, 0, width, height);
+    nodes.forEach(node => {
+        if (isDrifting) node.drift();
+        node.draw();
+    });
+    requestAnimationFrame(render);
+}
+
+/* ==========================================================================
+   SAFE GSAP TYPEWRITER ENGINE WITH SLOWER CINEMATIC PACING
+   ========================================================================== */
+function buildAnimationSequence() {
+    if (masterTL) masterTL.kill();
+
+    const epPath = document.getElementById("ep-symbol-path");
+    const planiPath = document.getElementById("plani-wordmark-path");
+    const dot = document.getElementById("signature-dot");
+    const svg = document.getElementById("eplani-svg");
+    const grid = document.getElementById("blueprint-grid");
+
+    const hudContainer = document.getElementById("hud-container");
+    const hudMeta = document.getElementById("hud-meta");
+    const hudStatus = document.getElementById("hud-status");
+    const hudText = document.getElementById("hud-text");
+    const typeCursor = document.getElementById("type-cursor");
+
+    const portalSphere = document.getElementById("orange-portal-sphere");
+    const mindOverlay = document.getElementById("mind-space-overlay");
+    const mindLogo = document.getElementById("mind-logo-svg");
+    const mindText = document.getElementById("mind-text");
+    const mindCursor = document.getElementById("mind-cursor");
+    const mCtaWrap = document.getElementById("m-cta-wrap");
+    const replayBtn = document.getElementById("replay-btn");
+
+    function prepare(path) {
+        if (!path) return;
+        const length = path.getTotalLength();
+        gsap.set(path, {
+            strokeDasharray: length,
+            strokeDashoffset: length,
+            fillOpacity: 0
+        });
+    }
+
+    prepare(epPath);
+    prepare(planiPath);
+
+    isDrifting = true;
+    initNodes();
+    
+    // SAFE TARGET FILTERING
+    const safeHideTargets = [svg, grid, mindOverlay, portalSphere, mCtaWrap, replayBtn].filter(Boolean);
+    gsap.set(safeHideTargets, { opacity: 0 });
+    
+    if (mindOverlay) gsap.set(mindOverlay, { visibility: "hidden" });
+    if (hudContainer) gsap.set(hudContainer, { opacity: 0, y: 10 });
+    if (dot) gsap.set(dot, { attr: { cx: CONFIG.coords.epDot.x, r: 6 } });
+
+    masterTL = gsap.timeline({ delay: 1.0 });
+
+    // TYPEWRITER FOR HUD READOUTS
+    function addTypewriterStep(tl, meta, status, textContent, holdTime = 3.0) {
+        tl.call(() => {
+            if (hudMeta) hudMeta.innerText = meta;
+            if (hudStatus) hudStatus.innerText = status;
+            if (hudText) hudText.innerText = "";
+            if (typeCursor) typeCursor.classList.add("active");
+        });
+
+        tl.to({}, {
+            duration: textContent.length * 0.048,
+            ease: "none",
+            onUpdate: function() {
+                if (hudText) {
+                    const count = Math.floor(this.progress() * textContent.length);
+                    hudText.innerText = textContent.substring(0, count);
+                }
+            }
+        });
+
+        tl.to({}, { duration: holdTime });
+
+        if (hudText) {
+            tl.to(hudText, {
+                opacity: 0,
+                y: -8,
+                duration: 0.6,
+                ease: "power2.in",
+                onComplete: () => {
+                    hudText.innerText = "";
+                    gsap.set(hudText, { opacity: 1, y: 0 });
+                    if (typeCursor) typeCursor.classList.remove("active");
+                }
+            });
+        }
+    }
+
+    // SLOWER CINEMATIC TYPEWRITER FOR MIND SPACE MANIFESTO
+    function addMindStep(tl, textContent, holdTime = 4.5) {
+        tl.call(() => {
+            if (mindText) {
+                mindText.innerText = "";
+                gsap.set(mindText, { opacity: 1, y: 0 });
+            }
+            if (mindCursor) mindCursor.classList.add("active");
+        });
+
+        tl.to({}, {
+            duration: textContent.length * 0.078,
+            ease: "none",
+            onUpdate: function() {
+                if (mindText) {
+                    const count = Math.floor(this.progress() * textContent.length);
+                    mindText.innerText = textContent.substring(0, count);
+                }
+            }
+        });
+
+        tl.to({}, { duration: holdTime });
+
+        if (mindText) {
+            tl.to(mindText, {
+                opacity: 0,
+                y: -8,
+                duration: 0.8,
+                ease: "power2.in",
+                onComplete: () => {
+                    mindText.innerText = "";
+                    if (mindCursor) mindCursor.classList.remove("active");
+                }
+            });
+        }
+    }
+
+    // 1. Reveal HUD Readout Container
+    if (hudContainer) {
+        masterTL.to(hudContainer, { opacity: 1, y: 0, duration: 1.2, ease: "power2.out" });
+    }
+
+    // 2. Readout Steps
+    addTypewriterStep(masterTL, "01 // ORIGIN", "SEARCHING", "Every creation begins before it has a form.", 2.5);
+    addTypewriterStep(masterTL, "01 // ORIGIN", "ANALYZING", "Before a brand. Before a product. Before a system.", 2.8);
+    addTypewriterStep(masterTL, "02 // PERSPECTIVE", "PROCESSING", "There is only a possibility.", 2.2);
+    addTypewriterStep(masterTL, "02 // PERSPECTIVE", "EVALUATING", "A question waiting to become structure.", 2.5);
+
+    // 3. Foundation & Drift
+    masterTL.call(() => {
+        nodes.forEach(node => {
+            gsap.to(node, {
+                vx: (width / 2 - node.x) * 0.0006,
+                vy: (height / 2 - node.y) * 0.0006,
+                duration: 7,
+                ease: "sine.inOut"
+            });
+        });
+    });
+
+    addTypewriterStep(masterTL, "03 // FOUNDATION", "CALIBRATING", "In 2009, EPLANI began with a simple principle:\nIdeas are completed when they become reality.", 3.5);
+
+    // Fade HUD
+    if (hudContainer) {
+        masterTL.to(hudContainer, { opacity: 0, y: -10, duration: 0.8, ease: "power2.in" });
+    }
+
+    // 4. GRID SNAP
+    masterTL.call(() => { isDrifting = false; });
+    if (grid) {
+        masterTL.to(grid, { opacity: 0.6, duration: 2.2, ease: "power2.out" });
+    }
+
+    masterTL.to(nodes, {
+        x: (i, node) => Math.round(node.x / CONFIG.gridSize) * CONFIG.gridSize,
+        y: (i, node) => Math.round(node.y / CONFIG.gridSize) * CONFIG.gridSize,
+        alpha: 0.85,
+        duration: 1.8,
+        ease: "expo.out"
+    });
+
+    masterTL.to({}, { duration: 0.6 });
+
+    // 5. CIRCUIT COLLAPSE TO EP DOT
+    masterTL.to(nodes, {
+        x: () => getPointInScreenPixels(CONFIG.coords.epDot.x, CONFIG.coords.epDot.y).x,
+        y: () => getPointInScreenPixels(CONFIG.coords.epDot.x, CONFIG.coords.epDot.y).y,
+        radius: 3.0,
+        alpha: 1,
+        duration: 2.0,
+        ease: "power2.in"
+    });
+
+    // 6. DRAW SVG LOGO
+    masterTL.call(() => {
+        if (svg) gsap.set(svg, { opacity: 1 });
+        if (dot) gsap.set(dot, { attr: { r: 6 } });
+        gsap.to(canvas, { opacity: 0, duration: 0.2 });
+    });
+
+    if (epPath && dot && planiPath) {
+        masterTL.to(epPath, { strokeDashoffset: 0, duration: 2.0, ease: "power2.inOut" })
+                .to(dot, { attr: { r: 40 }, duration: 1.2, ease: "power2.out" }, "-=1.8")
+                .to(epPath, { fillOpacity: 1, duration: 1.0 }, "-=0.5")
+                .to(dot, { attr: { cx: CONFIG.coords.finalDot.x }, duration: 1.8, ease: "expo.inOut" }, "+=0.2")
+                .to(planiPath, { strokeDashoffset: 0, duration: 1.8, ease: "power2.inOut" }, "-=1.4")
+                .to(planiPath, { fillOpacity: 1, duration: 1.0 }, "-=0.5");
+    }
+
+    masterTL.call(() => {
+        if (dot) gsap.to(dot, { attr: { r: 44 }, duration: 2.2, repeat: -1, yoyo: true, ease: "sine.inOut" });
+        const glowBlur = document.getElementById("glow-blur");
+        if (glowBlur) gsap.to(glowBlur, { attr: { stdDeviation: 12 }, duration: 2.2, repeat: -1, yoyo: true, ease: "sine.inOut" });
+    });
+
+    masterTL.to({}, { duration: 1.2 });
+
+    // 7. HARDWARE PORTAL EXPANSION
+    let requiredScale = 60;
+    masterTL.call(() => {
+        const pt = getPointInScreenPixels(CONFIG.coords.finalDot.x, CONFIG.coords.finalDot.y);
+        const maxDist = Math.max(
+            Math.hypot(pt.x, pt.y),
+            Math.hypot(width - pt.x, pt.y),
+            Math.hypot(pt.x, height - pt.y),
+            Math.hypot(width - pt.x, height - pt.y)
+        );
+        requiredScale = (maxDist / 40) * 1.25;
+
+        if (portalSphere) {
+            gsap.set(portalSphere, {
+                left: pt.x + "px",
+                top: pt.y + "px",
+                opacity: 1,
+                scale: 1
+            });
+        }
+    });
+
+    if (portalSphere) {
+        masterTL.to(portalSphere, {
+            scale: () => requiredScale,
+            duration: 1.5,
+            ease: "expo.inOut"
+        });
+    }
+
+    // 8. LOCK MIND OVERLAY PERMANENTLY
+    masterTL.call(() => {
+        if (mindOverlay) gsap.set(mindOverlay, { opacity: 1, visibility: "visible" });
+        const backdropHide = [svg, grid, portalSphere].filter(Boolean);
+        gsap.set(backdropHide, { opacity: 0 });
+    });
+
+    if (mindLogo) {
+        masterTL.to(mindLogo, { opacity: 1, y: 0, duration: 1.2, ease: "power2.out" }, "+=0.2");
+    }
+
+    // 9. CINEMATIC MIND SPACE MANIFESTO READOUTS
+    addMindStep(masterTL, "Every idea begins as a possibility.", 4.2);
+    addMindStep(masterTL, "But possibilities need structure.\nThey need clarity.\nThey need systems.", 4.8);
+    addMindStep(masterTL, "We design the thinking,\nthe structure,\nand the digital experiences behind meaningful creations.", 5.0);
+
+    // Sequence 4 (Reality - Final Statement)
+    const finalStr = "Where ideas become reality.";
+
+    masterTL.call(() => {
+        if (mindText) {
+            mindText.innerText = "";
+            gsap.set(mindText, { opacity: 1, y: 0 });
+        }
+        if (mindCursor) mindCursor.classList.add("active");
+    });
+
+    masterTL.to({}, {
+        duration: finalStr.length * 0.082,
+        ease: "none",
+        onUpdate: function() {
+            if (mindText) {
+                const count = Math.floor(this.progress() * finalStr.length);
+                mindText.innerText = finalStr.substring(0, count);
+            }
+        }
+    });
+
+    masterTL.to({}, { duration: 1.8 });
+
+    masterTL.call(() => {
+        if (mindCursor) mindCursor.classList.remove("active");
+    });
+
+    // 10. REVEAL STRUCTURED HUB & REPLAY CONTROL
+    if (mCtaWrap) masterTL.to(mCtaWrap, { opacity: 1, y: 0, duration: 1.4, ease: "power2.out" });
+    if (replayBtn) masterTL.to(replayBtn, { opacity: 1, duration: 1.0 }, "-=1.0");
+}
+
+/* ==========================================================================
+   INIT & REPLAY CONTROL
+   ========================================================================== */
+window.addEventListener("resize", resizeCanvas);
+
+window.addEventListener("DOMContentLoaded", () => {
+    resizeCanvas();
+    initNodes();
+    render();
+
+    buildAnimationSequence();
+
+    const replayBtn = document.getElementById("replay-btn");
+    if (replayBtn) {
+        replayBtn.addEventListener("click", () => {
+            const targets = [document.getElementById("mind-space-overlay"), document.getElementById("orange-portal-sphere")].filter(Boolean);
+            gsap.to(targets, {
+                opacity: 0,
+                duration: 0.8,
+                onComplete: () => {
+                    const mindOverlay = document.getElementById("mind-space-overlay");
+                    if (mindOverlay) gsap.set(mindOverlay, { visibility: "hidden" });
+                    buildAnimationSequence();
+                }
+            });
+        });
+    }
+});
+</script>
+
+</body>
+</html>

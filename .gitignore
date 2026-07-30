@@ -1,0 +1,8 @@
+# Ignore everything
+*
+
+# Allow this file
+!index.html
+
+# Allow .gitignore itself
+!.gitignore
