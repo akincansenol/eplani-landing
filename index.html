@@ -19,6 +19,8 @@
     --grid-line: rgba(85, 85, 85, 0.05);
     --brand-orange: #F3861F;
     --mind-text: #FAF9F5;
+    --lang-color: rgba(26, 26, 26, 0.45);
+    --lang-active: #1A1A1A;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -28,6 +30,8 @@
         --text-muted: rgba(250, 249, 245, 0.45);
         --wordmark-color: #FAF9F5;
         --grid-line: rgba(250, 249, 245, 0.04);
+        --lang-color: rgba(250, 249, 245, 0.45);
+        --lang-active: #FAF9F5;
     }
 }
 
@@ -50,6 +54,60 @@ html, body {
     html, body {
         overflow-y: auto;
     }
+}
+
+/* ==========================================================================
+   LANGUAGE TOGGLE CONTROL
+   ========================================================================== */
+.lang-toggle {
+    position: fixed;
+    top: 5vh;
+    right: 6vw;
+    z-index: 60;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: "SF Mono", "Roboto Mono", Consolas, monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+}
+
+.lang-btn {
+    background: none;
+    border: none;
+    color: var(--lang-color);
+    cursor: pointer;
+    padding: 4px 6px;
+    font-family: inherit;
+    font-size: inherit;
+    letter-spacing: inherit;
+    transition: color 0.3s ease;
+}
+
+.lang-btn.active {
+    color: var(--lang-active);
+    font-weight: 600;
+}
+
+.lang-btn:hover {
+    color: var(--lang-active);
+}
+
+.lang-divider {
+    color: var(--lang-color);
+    opacity: 0.5;
+}
+
+body.in-mind-space .lang-btn {
+    color: rgba(250, 249, 245, 0.5);
+}
+body.in-mind-space .lang-btn.active,
+body.in-mind-space .lang-btn:hover {
+    color: #FAF9F5;
+}
+body.in-mind-space .lang-divider {
+    color: rgba(250, 249, 245, 0.4);
 }
 
 /* ==========================================================================
@@ -264,25 +322,6 @@ html, body {
     transform: translateY(16px);
 }
 
-.mind-pillars {
-    display: flex;
-    justify-content: center;
-    gap: 32px;
-    margin-bottom: 35px;
-    flex-wrap: wrap;
-}
-
-.pillar-item {
-    font-family: "SF Mono", "Roboto Mono", Consolas, monospace;
-    font-size: 11px;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: rgba(250, 249, 245, 0.75);
-    border: 1px solid rgba(250, 249, 245, 0.25);
-    padding: 8px 16px;
-    border-radius: 20px;
-}
-
 .mind-cta-text {
     font-size: clamp(17px, 1.6vw, 22px);
     font-weight: 300;
@@ -332,6 +371,13 @@ html, body {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 </head>
 <body>
+
+<!-- LANGUAGE TOGGLE CONTROLS -->
+<div class="lang-toggle">
+    <button id="lang-en" class="lang-btn active">EN</button>
+    <span class="lang-divider">/</span>
+    <button id="lang-tr" class="lang-btn">TR</button>
+</div>
 
 <!-- HARDWARE-ACCELERATED PORTAL SPHERE -->
 <div id="orange-portal-sphere"></div>
@@ -389,20 +435,88 @@ html, body {
             </div>
             
             <div id="m-cta-wrap" class="mind-cta-wrap">
-                <p class="mind-cta-text">
-                    Whether you're shaping a brand,<br>
-                    designing a digital experience,<br>
-                    or building a system—
-                </p>
-                <a href="https://www.linkedin.com/company/eplani" target="_blank" rel="noopener noreferrer" class="mind-action">Let's explore what's possible →</a>
+                <p id="mind-cta-text" class="mind-cta-text"></p>
+                <a id="mind-cta-action" href="https://www.linkedin.com/company/eplani" target="_blank" rel="noopener noreferrer" class="mind-action"></a>
             </div>
         </div>
 
-        <button id="replay-btn" class="replay-btn">↺ Replay Experience</button>
+        <button id="replay-btn" class="replay-btn"></button>
     </div>
 </div>
 
 <script>
+/* ==========================================================================
+   DICTIONARY SYSTEM (EN / TR)
+   ========================================================================== */
+const I18N = {
+    en: {
+        hudMeta: [
+            "01 // ORIGIN",
+            "01 // ORIGIN",
+            "02 // PERSPECTIVE",
+            "02 // PERSPECTIVE",
+            "03 // FOUNDATION"
+        ],
+        hudStatus: [
+            "SEARCHING",
+            "ANALYZING",
+            "PROCESSING",
+            "EVALUATING",
+            "CALIBRATING"
+        ],
+        hudText: [
+            "Every creation begins before it has a form.",
+            "Before a brand. Before a product. Before a system.",
+            "There is only a possibility.",
+            "A question waiting to become structure.",
+            "In 2009, EPLANI began with a simple principle:\nIdeas are completed when they become reality."
+        ],
+        mindText: [
+            "Every idea begins as a possibility.",
+            "But possibilities need structure.\nThey need clarity.\nThey need systems.",
+            "We design the thinking,\nthe structure,\nand the digital experiences behind meaningful creations.",
+            "Where ideas become reality."
+        ],
+        ctaText: "Whether you're shaping a brand,<br>designing a digital experience,<br>or building a system—",
+        ctaAction: "Let's explore what's possible →",
+        replayBtn: "↺ Replay Experience"
+    },
+    tr: {
+        hudMeta: [
+            "01 // KÖKEN",
+            "01 // KÖKEN",
+            "02 // PERSPEKTİF",
+            "02 // PERSPEKTİF",
+            "03 // TEMEL"
+        ],
+        hudStatus: [
+            "ARANIYOR",
+            "ANALİZ EDİLİYOR",
+            "İŞLENİYOR",
+            "DEĞERLENDİRİLİYOR",
+            "KALİBRE EDİLİYOR"
+        ],
+        hudText: [
+            "Her yaratım, henüz bir formu yokken başlar.",
+            "Bir markadan önce. Bir üründen önce. Bir sistemden önce.",
+            "Sadece bir olasılık vardır.",
+            "Yapıya dönüşmeyi bekleyen bir soru.",
+            "2009'da EPLANI basit bir ilkeyle başladı:\nFikirler, gerçekliğe dönüştüklerinde tamamlanır."
+        ],
+        mindText: [
+            "Her fikir bir olasılık olarak başlar.",
+            "Fakat olasılıkların yapıya ihtiyacı vardır.\nNetliğe ihtiyaçları vardır.\nSistemlere ihtiyaçları vardır.",
+            "Anlamlı yaratımların arkasındaki düşünceyi,\nyapıyı ve dijital deneyimleri tasarlıyoruz.",
+            "Fikirlerin gerçekliğe dönüştüğü yer."
+        ],
+        ctaText: "İster bir markayı şekillendiriyor,<br>ister dijital bir deneyim tasarlıyor,<br>ister bir sistem kuruyor olun—",
+        ctaAction: "Nelerin mümkün olduğunu keşfedelim →",
+        replayBtn: "↺ Deneyimi Yeniden Başlat"
+    }
+};
+
+let currentLang = 'en';
+
 /* ==========================================================================
    CONFIG & ENGINE
    ========================================================================== */
@@ -537,10 +651,21 @@ function render() {
 }
 
 /* ==========================================================================
-   SAFE GSAP TYPEWRITER ENGINE WITH SLOWER CINEMATIC PACING
+   SAFE GSAP TYPEWRITER ENGINE WITH SLOWER CINEMATIC PACING & AXIS ALIGNMENT
    ========================================================================== */
 function buildAnimationSequence() {
     if (masterTL) masterTL.kill();
+
+    const dict = I18N[currentLang];
+
+    // Populate static text nodes according to current language
+    const mindCtaText = document.getElementById("mind-cta-text");
+    const mindCtaAction = document.getElementById("mind-cta-action");
+    const replayBtn = document.getElementById("replay-btn");
+
+    if (mindCtaText) mindCtaText.innerHTML = dict.ctaText;
+    if (mindCtaAction) mindCtaAction.innerHTML = dict.ctaAction;
+    if (replayBtn) replayBtn.innerText = dict.replayBtn;
 
     const epPath = document.getElementById("ep-symbol-path");
     const planiPath = document.getElementById("plani-wordmark-path");
@@ -560,7 +685,6 @@ function buildAnimationSequence() {
     const mindText = document.getElementById("mind-text");
     const mindCursor = document.getElementById("mind-cursor");
     const mCtaWrap = document.getElementById("m-cta-wrap");
-    const replayBtn = document.getElementById("replay-btn");
 
     function prepare(path) {
         if (!path) return;
@@ -577,6 +701,7 @@ function buildAnimationSequence() {
 
     isDrifting = true;
     initNodes();
+    document.body.classList.remove("in-mind-space");
     
     // SAFE TARGET FILTERING
     const safeHideTargets = [svg, grid, mindOverlay, portalSphere, mCtaWrap, replayBtn].filter(Boolean);
@@ -586,7 +711,7 @@ function buildAnimationSequence() {
     if (hudContainer) gsap.set(hudContainer, { opacity: 0, y: 10 });
     if (dot) gsap.set(dot, { attr: { cx: CONFIG.coords.epDot.x, r: 6 } });
 
-    masterTL = gsap.timeline({ delay: 1.0 });
+    masterTL = gsap.timeline({ delay: 0.8 });
 
     // TYPEWRITER FOR HUD READOUTS
     function addTypewriterStep(tl, meta, status, textContent, holdTime = 3.0) {
@@ -625,7 +750,7 @@ function buildAnimationSequence() {
         }
     }
 
-    // SLOWER CINEMATIC TYPEWRITER FOR MIND SPACE MANIFESTO
+    // CINEMATIC TYPEWRITER FOR MIND SPACE MANIFESTO
     function addMindStep(tl, textContent, holdTime = 4.5) {
         tl.call(() => {
             if (mindText) {
@@ -667,11 +792,11 @@ function buildAnimationSequence() {
         masterTL.to(hudContainer, { opacity: 1, y: 0, duration: 1.2, ease: "power2.out" });
     }
 
-    // 2. Readout Steps
-    addTypewriterStep(masterTL, "01 // ORIGIN", "SEARCHING", "Every creation begins before it has a form.", 2.5);
-    addTypewriterStep(masterTL, "01 // ORIGIN", "ANALYZING", "Before a brand. Before a product. Before a system.", 2.8);
-    addTypewriterStep(masterTL, "02 // PERSPECTIVE", "PROCESSING", "There is only a possibility.", 2.2);
-    addTypewriterStep(masterTL, "02 // PERSPECTIVE", "EVALUATING", "A question waiting to become structure.", 2.5);
+    // 2. Readout Steps using Active Dictionary
+    addTypewriterStep(masterTL, dict.hudMeta[0], dict.hudStatus[0], dict.hudText[0], 2.5);
+    addTypewriterStep(masterTL, dict.hudMeta[1], dict.hudStatus[1], dict.hudText[1], 2.8);
+    addTypewriterStep(masterTL, dict.hudMeta[2], dict.hudStatus[2], dict.hudText[2], 2.2);
+    addTypewriterStep(masterTL, dict.hudMeta[3], dict.hudStatus[3], dict.hudText[3], 2.5);
 
     // 3. Foundation & Drift
     masterTL.call(() => {
@@ -685,19 +810,20 @@ function buildAnimationSequence() {
         });
     });
 
-    addTypewriterStep(masterTL, "03 // FOUNDATION", "CALIBRATING", "In 2009, EPLANI began with a simple principle:\nIdeas are completed when they become reality.", 3.5);
+    addTypewriterStep(masterTL, dict.hudMeta[4], dict.hudStatus[4], dict.hudText[4], 3.5);
 
     // Fade HUD
     if (hudContainer) {
         masterTL.to(hudContainer, { opacity: 0, y: -10, duration: 0.8, ease: "power2.in" });
     }
 
-    // 4. GRID SNAP
+    // 4. GRID SNAP & AXIS ALIGNMENT (IZGARADAN TEK EKSEN HATLARINA TOPLANMA)
     masterTL.call(() => { isDrifting = false; });
     if (grid) {
         masterTL.to(grid, { opacity: 0.6, duration: 2.2, ease: "power2.out" });
     }
 
+    // 4A: Snap nodes to nearest grid intersections
     masterTL.to(nodes, {
         x: (i, node) => Math.round(node.x / CONFIG.gridSize) * CONFIG.gridSize,
         y: (i, node) => Math.round(node.y / CONFIG.gridSize) * CONFIG.gridSize,
@@ -706,15 +832,32 @@ function buildAnimationSequence() {
         ease: "expo.out"
     });
 
-    masterTL.to({}, { duration: 0.6 });
+    masterTL.to({}, { duration: 0.5 });
 
-    // 5. CIRCUIT COLLAPSE TO EP DOT
+    // 4B: Gather nodes onto the horizontal & vertical axes passing through the target dot (Eksen Toplanması)
+    masterTL.to(nodes, {
+        x: (i, node) => {
+            const pt = getPointInScreenPixels(CONFIG.coords.epDot.x, CONFIG.coords.epDot.y);
+            return (i % 2 === 0) ? pt.x : Math.round(node.x / CONFIG.gridSize) * CONFIG.gridSize;
+        },
+        y: (i, node) => {
+            const pt = getPointInScreenPixels(CONFIG.coords.epDot.x, CONFIG.coords.epDot.y);
+            return (i % 2 !== 0) ? pt.y : Math.round(node.y / CONFIG.gridSize) * CONFIG.gridSize;
+        },
+        alpha: 0.95,
+        duration: 1.6,
+        ease: "power3.inOut"
+    });
+
+    masterTL.to({}, { duration: 0.4 });
+
+    // 5. CIRCUIT COLLAPSE TO EXACT EP DOT POSITION
     masterTL.to(nodes, {
         x: () => getPointInScreenPixels(CONFIG.coords.epDot.x, CONFIG.coords.epDot.y).x,
         y: () => getPointInScreenPixels(CONFIG.coords.epDot.x, CONFIG.coords.epDot.y).y,
         radius: 3.0,
         alpha: 1,
-        duration: 2.0,
+        duration: 1.8,
         ease: "power2.in"
     });
 
@@ -777,19 +920,20 @@ function buildAnimationSequence() {
         if (mindOverlay) gsap.set(mindOverlay, { opacity: 1, visibility: "visible" });
         const backdropHide = [svg, grid, portalSphere].filter(Boolean);
         gsap.set(backdropHide, { opacity: 0 });
+        document.body.classList.add("in-mind-space");
     });
 
     if (mindLogo) {
         masterTL.to(mindLogo, { opacity: 1, y: 0, duration: 1.2, ease: "power2.out" }, "+=0.2");
     }
 
-    // 9. CINEMATIC MIND SPACE MANIFESTO READOUTS
-    addMindStep(masterTL, "Every idea begins as a possibility.", 4.2);
-    addMindStep(masterTL, "But possibilities need structure.\nThey need clarity.\nThey need systems.", 4.8);
-    addMindStep(masterTL, "We design the thinking,\nthe structure,\nand the digital experiences behind meaningful creations.", 5.0);
+    // 9. CINEMATIC MIND SPACE MANIFESTO READOUTS (FROM DICTIONARY)
+    addMindStep(masterTL, dict.mindText[0], 4.2);
+    addMindStep(masterTL, dict.mindText[1], 4.8);
+    addMindStep(masterTL, dict.mindText[2], 5.0);
 
     // Sequence 4 (Reality - Final Statement)
-    const finalStr = "Where ideas become reality.";
+    const finalStr = dict.mindText[3];
 
     masterTL.call(() => {
         if (mindText) {
@@ -822,7 +966,7 @@ function buildAnimationSequence() {
 }
 
 /* ==========================================================================
-   INIT & REPLAY CONTROL
+   INIT, LANGUAGE TOGGLE & REPLAY CONTROLS
    ========================================================================== */
 window.addEventListener("resize", resizeCanvas);
 
@@ -832,6 +976,37 @@ window.addEventListener("DOMContentLoaded", () => {
     render();
 
     buildAnimationSequence();
+
+    // Language Toggle Listeners
+    const btnEn = document.getElementById("lang-en");
+    const btnTr = document.getElementById("lang-tr");
+
+    function switchLanguage(lang) {
+        if (currentLang === lang) return;
+        currentLang = lang;
+
+        if (lang === 'en') {
+            btnEn.classList.add('active');
+            btnTr.classList.remove('active');
+        } else {
+            btnTr.classList.add('active');
+            btnEn.classList.remove('active');
+        }
+
+        const targets = [document.getElementById("mind-space-overlay"), document.getElementById("orange-portal-sphere")].filter(Boolean);
+        gsap.to(targets, {
+            opacity: 0,
+            duration: 0.6,
+            onComplete: () => {
+                const mindOverlay = document.getElementById("mind-space-overlay");
+                if (mindOverlay) gsap.set(mindOverlay, { visibility: "hidden" });
+                buildAnimationSequence();
+            }
+        });
+    }
+
+    if (btnEn) btnEn.addEventListener("click", () => switchLanguage('en'));
+    if (btnTr) btnTr.addEventListener("click", () => switchLanguage('tr'));
 
     const replayBtn = document.getElementById("replay-btn");
     if (replayBtn) {
